@@ -4,16 +4,16 @@
       "tag": "greeting",
       "patterns": ["Hello", "Hi", "How are you?", "Is anyone there?", "Hey"],
       "responses": {
-        "en": ["Hello!", "Hi there!"],
-        "ta": ["வணக்கம்!", "நீங்கள் எப்படி இருக்கிறீர்கள்?"]
+        "en": ["Hello!", "Hi there! How can I assist you today?"],
+        "ta": ["வணக்கம்!", "வணக்கம்! நான் உங்களுக்கு எப்படி உதவ வேண்டும்?"]
       }
     },
     {
       "tag": "goodbye",
       "patterns": ["Bye", "See you later", "Goodbye"],
       "responses": {
-        "en": ["Goodbye!", "See you later!"],
-        "ta": ["பிரியாவிடை!", "பின்னர் பார்க்கலாம்!"]
+        "en": ["Goodbye!", "See you later! Have a great day!"],
+        "ta": ["பிரியாவிடை!", "பின்னர் சந்திப்போம்! உங்களுக்கு நல்ல நாள்!"]
       }
     },
     {
