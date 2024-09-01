@@ -1,3 +1,32 @@
+const intents = {
+    "intents": [
+        {
+            "tag": "greeting",
+            "patterns": ["hello", "hi", "how are you", "is anyone there", "hey"],
+            "responses": {
+                "en": ["Hello!", "Hi there! How can I assist you today?"],
+                "ta": ["வணக்கம்!", "வணக்கம்! நான் உங்களுக்கு எப்படி உதவ வேண்டும்?"]
+            }
+        },
+        {
+            "tag": "goodbye",
+            "patterns": ["bye", "see you later", "goodbye"],
+            "responses": {
+                "en": ["Goodbye!", "See you later! Have a great day!"],
+                "ta": ["பிரியாவிடை!", "பின்னர் சந்திப்போம்! உங்களுக்கு நல்ல நாள்!"]
+            }
+        },
+        {
+            "tag": "thanks",
+            "patterns": ["thanks", "thank you", "that's helpful"],
+            "responses": {
+                "en": ["You're welcome!", "Glad to help!"],
+                "ta": ["உங்களை வரவேற்கிறேன்!", "உதவியதில் மகிழ்ச்சி!"]
+            }
+        }
+    ]
+};
+
 document.getElementById('send').addEventListener('click', function() {
     sendMessage();
 });
@@ -21,7 +50,7 @@ document.getElementById('speak').addEventListener('click', function() {
 });
 
 function sendMessage() {
-    let message = document.getElementById('message').value;
+    let message = document.getElementById('message').value.toLowerCase();
     let language = document.getElementById('language').value;
     document.getElementById('message').value = '';
 
@@ -31,18 +60,20 @@ function sendMessage() {
 
     updateChatlog('user', message);
 
-    fetch('/chat', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: `message=${message}&language=${language}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        updateChatlog('bot', data.response);
-        playSpeech(data.response, language);
-    });
+    let response = getResponse(message, language);
+    updateChatlog('bot', response);
+    playSpeech(response, language);
+}
+
+function getResponse(message, language) {
+    for (let intent of intents.intents) {
+        for (let pattern of intent.patterns) {
+            if (message.includes(pattern)) {
+                return intent.responses[language][Math.floor(Math.random() * intent.responses[language].length)];
+            }
+        }
+    }
+    return language === 'en' ? "Sorry, I didn't understand that." : "மன்னிக்கவும், என்னை புரிந்துகொள்ள முடியவில்லை.";
 }
 
 function updateChatlog(sender, text) {
@@ -55,18 +86,8 @@ function updateChatlog(sender, text) {
 }
 
 function playSpeech(text, language) {
-    fetch('/speak', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: `text=${text}&language=${language}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        let audio = document.getElementById('audio');
-        audio.src = data.audio;
-        audio.hidden = false;
-        audio.play();
-    });
+    let speech = new SpeechSynthesisUtterance();
+    speech.lang = language === 'ta' ? 'ta-IN' : 'en-US';
+    speech.text = text;
+    window.speechSynthesis.speak(speech);
 }
